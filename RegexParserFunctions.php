@@ -57,6 +57,7 @@ $wgExtensionCredits['parserhook'][] = array(
 );
 
 
+
 /**
  * Wrapper class for encapsulating Regexp related parser methods
  */
@@ -100,8 +101,11 @@ class RegexParserFunctions {
     	global $wgParser, $wgMessageCache;
     	$wgParser->setFunctionHook( 'regex', array($this, 'regexParserFunction') );
     	$wgParser->setFunctionHook( 'regexp', array($this, 'regexParserFunction') );
-        $wgMessageCache->addMessage('regexp-unacceptable', 'The regular expression &quot;<tt><nowiki>$1</nowiki></tt>&quot; is unacceptable.');
+    }
 
+    static function onMessagesPreload($title, &$message) {
+        wfMsg('regexp-unacceptable', 'The regular expression &quot;<tt><nowiki>$1</nowiki></tt>&quot; is unacceptable.');
+        return true;
     }
     
 }
@@ -109,7 +113,7 @@ class RegexParserFunctions {
 # Create global instance and wire it up
 $wgRegexParserFunctions = new RegexParserFunctions();
 $wgHooks['LanguageGetMagic'][] = array($wgRegexParserFunctions, 'regexParserFunctionMagic');
-$wgExtensionFunctions[] = array($wgRegexParserFunctions, 'regexParserFunctionSetup');
+$wgHooks['MessagesPreLoad'][] = 'RegexParserFunctions::onMessagesPreLoad';
 
 } # End MW Environment wrapper
 //</source>
